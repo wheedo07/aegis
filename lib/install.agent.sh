@@ -6,8 +6,6 @@ MOD_ZIP_URL="https://raw.githubusercontent.com/wheedo07/aegis-agent/refs/heads/m
 AEGIS_CONF_DIR="/etc/aegis"
 AEGIS_RUN_DIR="/var/run/aegis"
 
-# ------------------------------------------------------------------ #
-
 install_agent() {
     require_root
 
@@ -26,9 +24,6 @@ install_agent() {
     info "  2. Apache 설정에 AegisEnabled On 추가 후 재시작"
     info "     (예시: /etc/apache2/conf-available/aegis.conf 참고)"
 }
-
-# ------------------------------------------------------------------ #
-# 내부 함수
 
 _check_apache() {
     info "Apache 설치 확인 중..."
@@ -54,15 +49,25 @@ _install_build_deps() {
         # curl, unzip 만 확인
         local os; os=$(detect_os)
         case "$os" in
-            debian) pkg_install --no-upgrade curl unzip ;;
-            rhel)   pkg_install curl unzip ;;
+            debian)
+                pkg_install --no-upgrade curl unzip
+            ;;
+            rhel)
+                pkg_install curl unzip
+            ;;
         esac
     else
         local os; os=$(detect_os)
         case "$os" in
-            debian) pkg_install apache2-dev build-essential curl unzip ;;
-            rhel)   pkg_install httpd-devel gcc make curl unzip ;;
-            *)      die "apxs 를 찾을 수 없습니다. apache 개발 패키지를 수동으로 설치하세요." ;;
+            debian)
+                pkg_install apache2-dev build-essential curl unzip
+            ;;
+            rhel)
+                pkg_install httpd-devel gcc make curl unzip
+            ;;
+            *)
+                die "apxs 를 찾을 수 없습니다. apache 개발 패키지를 수동으로 설치하세요."
+            ;;
         esac
     fi
 
@@ -86,7 +91,6 @@ _install_mod() {
         die "다운로드 실패: $MOD_ZIP_URL"
     fi
 
-    # zip 유효성 확인
     if ! unzip -t "$tmpdir/aegis-mod.zip" &>/dev/null; then
         die "다운로드된 파일이 올바른 zip 형식이 아닙니다."
     fi
@@ -98,15 +102,9 @@ _install_mod() {
         die "zip 파일 내에 'module/' 디렉토리가 없습니다."
     fi
 
-    # 필수 소스 파일 확인
-    for f in aegis_mod.c aegis_mod.config.c aegis_mod.collector.c; do
-        [[ -f "$moddir/$f" ]] || die "필수 소스 파일 없음: $f"
-    done
-
     info "aegis_mod.so 빌드 중..."
 
     pushd "$moddir" > /dev/null
-        # 여러 .c 를 한 번에 컴파일 → aegis_mod.so 생성
         $APXS -c \
             aegis_mod.c \
             aegis_mod.config.c \

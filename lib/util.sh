@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
-# 공통 유틸리티: 로그 출력, OS 감지, 패키지 설치
-RED='\033[0;31m'; GREEN='\033[0;32m'
-YELLOW='\033[1;33m'; BLUE='\033[0;34m'; NC='\033[0m'
+RED='\033[0;31m';
+GREEN='\033[0;32m';
+YELLOW='\033[1;33m';
+BLUE='\033[0;34m';
+NC='\033[0m';
 
 info()    { echo -e "${BLUE}[INFO]${NC}  $*"; }
 success() { echo -e "${GREEN}[OK]${NC}    $*"; }
