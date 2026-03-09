@@ -18,7 +18,6 @@ install_agent() {
     _install_mod
     _create_dirs
     _write_apache_conf
-    _write_agent_conf
 
     echo ""
     success "aegis-agent 설치 완료!"
@@ -166,12 +165,12 @@ _write_apache_conf() {
 # aegis-mod Apache 설정
 # AegisEnabled On 을 원하는 Location/Directory 블록에 추가
 # -------------------------------------------------------
-AegisAgentSocket  /var/run/aegis/agent.sock
-AegisTimeout      200
-AegisFailOpen     On
+# AegisAgentSocket  /var/run/aegis/agent.sock
+# AegisTimeout      200
+# AegisFailOpen     On
 # AegisControlURL https://your-aegis-server.example.com
 
-# 전체 사이트에 적용하려면 아래 주석을 해제
+# 전체 사이트에 적용
 # <Location />
 #     AegisEnabled On
 # </Location>
@@ -187,11 +186,11 @@ EOF
         fi
         # RHEL은 a2enmod 가 없으므로 conf.d 에 LoadModule 도 함께 작성
         cat > "$conf" <<'EOF'
-LoadModule aegis_module modules/aegis_mod.so
+# LoadModule aegis_module modules/aegis_mod.so
 
-AegisAgentSocket  /var/run/aegis/agent.sock
-AegisTimeout      200
-AegisFailOpen     On
+# AegisAgentSocket  /var/run/aegis/agent.sock
+# AegisTimeout      200
+# AegisFailOpen     On
 # AegisControlURL https://your-aegis-server.example.com
 
 # <Location />
@@ -202,21 +201,4 @@ EOF
     else
         warn "Apache 설정 디렉토리를 찾지 못했습니다. 수동으로 설정하세요."
     fi
-}
-
-_write_agent_conf() {
-    local conf="$AEGIS_CONF_DIR/agent.conf"
-    if [[ -f "$conf" ]]; then
-        warn "$conf 이미 존재합니다. 덮어쓰지 않습니다."
-        return
-    fi
-    info "에이전트 기본 설정 파일 작성 중..."
-    cat > "$conf" <<EOF
-# aegis-agent 설정
-server_url    = http://localhost:8080
-agent_socket  = /var/run/aegis/agent.sock
-fail_open     = true
-timeout_ms    = 200
-EOF
-    success "에이전트 설정 저장됨: $conf"
 }

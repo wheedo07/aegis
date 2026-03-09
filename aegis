@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# aegis - Aegis 통합 관리 CLI
+# aegis - 통합 관리 CLI
 set -euo pipefail
 
 AEGIS_VERSION=0.0.1
